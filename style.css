@@ -1,0 +1,129 @@
+/* ==========================================================
+   دیوان — تم کاشی بورگوندی
+   ایده: دیواری از کاشی‌های لعابدار تیره، و لوگو مثل یک
+   لوحِ کرمی‌رنگ در وسط آن نصب شده است.
+   ========================================================== */
+
+/* ---------- ۱) توکن‌های رنگ و اندازه ----------
+   همه‌ی رنگ‌ها یک جا تعریف شده‌اند تا تغییر تم آسان باشد.
+   #4E0612 همان رنگ ساده‌ای است که فرستادی (فایل 86813). */
+:root {
+  --burgundy-deep: #4E0612;   /* زمینه‌ی اصلی */
+  --burgundy-ink:  #650015;   /* رنگ خود لوگو */
+  --plaque-cream:  #F4ECE0;   /* زمینه‌ی لوح (جای سفیدِ لوگو) */
+  --plaque-edge:   #2A0309;   /* سایه‌ی لبه‌ها */
+
+  /* اندازه‌ی لوح: روی موبایل ۷۸٪ عرض، ولی هیچ‌وقت بزرگ‌تر از ۴۲۰ پیکسل */
+  --plaque-size: min(78vw, 420px);
+
+  /* اندازه‌ی هر کاشی در دیوار. فایل tiles.jpg دو کاشی در دو کاشی است. */
+  --tile-size: 112px;
+}
+
+/* ---------- ۲) ریست ساده ---------- */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  height: 100%;
+  background: var(--burgundy-deep); /* اگر تصویر دیر بیاید، رنگ درست دیده شود */
+  overflow: hidden;                 /* صفحه‌ی تک‌صحنه‌ای است؛ اسکرول لازم نیست */
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* ---------- ۳) صحنه: دیوار کاشی + وسط‌چین ---------- */
+.stage {
+  /* ابتدا 100vh برای مرورگرهای قدیمی، بعد مقدار بهتر.
+     --tg-viewport-stable-height را خود تلگرام می‌گذارد و دقیق‌ترین ارتفاع است.
+     dvh در مرورگرهای معمولی با نوار آدرس متغیر درست کار می‌کند. */
+  min-height: 100vh;
+  min-height: var(--tg-viewport-stable-height, 100dvh);
+
+  display: grid;
+  place-items: center;   /* وسط‌چین عمودی و افقی با یک خط */
+
+  /* فاصله از لبه‌ها، با احترام به ناچ و نوار پایینی گوشی */
+  padding:
+    max(24px, env(safe-area-inset-top))
+    max(24px, env(safe-area-inset-right))
+    max(24px, env(safe-area-inset-bottom))
+    max(24px, env(safe-area-inset-left));
+
+  /* لایه‌ها از بالا به پایین:
+     ۱) هاله‌ی تیره در مرکز تا لوح برجسته شود
+     ۲) تیره‌کننده‌ی کلی تا کاشی‌ها شلوغ نباشند
+     ۳) خود دیوار کاشی */
+  background-color: var(--burgundy-deep);
+  background-image:
+    radial-gradient(ellipse at center, rgba(30, 2, 8, 0.78) 0%, rgba(30, 2, 8, 0.25) 55%, rgba(30, 2, 8, 0.55) 100%),
+    linear-gradient(rgba(78, 6, 18, 0.58), rgba(78, 6, 18, 0.58)),
+    url("./assets/tiles.jpg");
+  background-size:
+    auto,
+    auto,
+    calc(var(--tile-size) * 2) calc(var(--tile-size) * 2); /* دو کاشی = یک تکرار */
+  background-position: center;
+}
+
+/* ---------- ۴) لوح لوگو ---------- */
+.plaque {
+  width: var(--plaque-size);
+  aspect-ratio: 800 / 751;       /* نسبت واقعی لوگو؛ جلوگیری از پرش چیدمان */
+  background: var(--plaque-cream);
+  border-radius: 6px;
+
+  /* سایه‌ی چندلایه: لوح مثل یک کاشی برجسته روی دیوار می‌نشیند */
+  box-shadow:
+    0 0 0 2px rgba(244, 236, 224, 0.12),   /* درز بسیار ظریف دور لوح */
+    0 18px 40px -8px var(--plaque-edge),   /* سایه‌ی اصلی */
+    0 4px 10px rgba(0, 0, 0, 0.45),        /* سایه‌ی تماسی نزدیک */
+    inset 0 1px 0 rgba(255, 255, 255, 0.6);/* براقیتِ لبه‌ی بالایی */
+
+  /* تنها حرکت صفحه: ورود نرم لوگو هنگام باز شدن */
+  animation: plaque-in 700ms cubic-bezier(0.2, 0.7, 0.2, 1) both;
+}
+
+.plaque__logo {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  user-select: none;
+  -webkit-user-drag: none;
+}
+
+@keyframes plaque-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px) scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* کاربرانی که انیمیشن را در گوشی خاموش کرده‌اند، حرکت نمی‌بینند */
+@media (prefers-reduced-motion: reduce) {
+  .plaque {
+    animation: none;
+  }
+}
+
+/* ---------- ۵) متن مخصوص صفحه‌خوان ---------- */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}

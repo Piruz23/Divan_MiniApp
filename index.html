@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<!--
+  دیوان — مینی‌اپ تلگرام (طرح خام)
+  فقط HTML و CSS و JS ساده است؛ برای GitHub Pages نیازی به build ندارد.
+-->
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="utf-8">
+
+  <!--
+    viewport-fit=cover: صفحه زیر ناچ و لبه‌های گوشی هم کشیده می‌شود.
+    user-scalable=no: جلوگیری از زوم تصادفی؛ مینی‌اپ باید مثل اپ رفتار کند.
+  -->
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
+
+  <!-- رنگ نوار مرورگر (وقتی بیرون از تلگرام باز شود) و حالت تیره -->
+  <meta name="theme-color" content="#4E0612">
+  <meta name="color-scheme" content="dark">
+
+  <title>دیوان</title>
+
+  <!-- ظاهر صفحه -->
+  <link rel="stylesheet" href="./style.css">
+
+  <!-- لوگو زودتر دانلود شود تا صفحه خالی دیده نشود -->
+  <link rel="preload" as="image" href="./assets/logo.png">
+</head>
+<body>
+
+  <!--
+    عنوان اصلی فقط برای صفحه‌خوان‌ها و موتورهای جستجو است (sr-only)،
+    چون خود لوگو نام «دیوان» را نشان می‌دهد.
+  -->
+  <h1 class="sr-only">دیوان</h1>
+
+  <main class="stage">
+    <div class="plaque">
+      <img
+        class="plaque__logo"
+        src="./assets/logo.png"
+        alt="لوگوی دیوان"
+        width="800"
+        height="751"
+        decoding="async">
+    </div>
+  </main>
+
+  <!--
+    اسکریپت رسمی تلگرام. باید قبل از app.js بیاید تا window.Telegram موجود باشد.
+    اگر صفحه بیرون از تلگرام باز شود، این اسکریپت بارگذاری می‌شود ولی WebApp خالی است
+    و app.js این حالت را بدون خطا مدیریت می‌کند.
+  -->
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <script src="./app.js"></script>
+</body>
+</html>
