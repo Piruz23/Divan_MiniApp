@@ -1,5 +1,176 @@
 <!DOCTYPE html>
 <!--
+  دیوان — مینی‌اپ تلگرام (نسخه‌ی ۲)
+  سه تب: خانه، ابزارها، پنل من. فقط HTML و CSS و JS ساده؛ برای GitHub Pages
+  نیازی به build ندارد.
+-->
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="utf-8">
+  <!-- viewport-fit=cover: صفحه زیر ناچ و لبه‌ی گوشی هم کشیده می‌شود
+       (فاصله‌ی امن را در CSS با env(safe-area-inset-*) رعایت می‌کنیم) -->
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
+  <meta name="theme-color" content="#4E0612">
+  <meta name="color-scheme" content="dark">
+  <title>دیوان</title>
+
+  <!-- فونت از همین مخزن بارگذاری می‌شود، نه از Google Fonts:
+       در برخی شبکه‌ها سرویس‌های فونت گوگل کند یا مسدود است -->
+  <link rel="preload" href="./assets/fonts/Vazirmatn-subset.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" as="image" href="./assets/logo.png">
+  <link rel="stylesheet" href="./style.css">
+</head>
+<body>
+
+  <!-- آیکون‌ها یک بار این‌جا تعریف می‌شوند و با <use> هر جا لازم بود صدا زده می‌شوند -->
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+    <defs>
+      <symbol id="i-home" viewBox="0 0 24 24"><path d="M3 11.5 12 4l9 7.5"/><path d="M5.5 10v9.5h13V10"/><path d="M10 19.5v-5h4v5"/></symbol>
+      <symbol id="i-tools" viewBox="0 0 24 24"><rect x="4" y="4" width="6.5" height="6.5" rx="1.6"/><rect x="13.5" y="4" width="6.5" height="6.5" rx="1.6"/><rect x="4" y="13.5" width="6.5" height="6.5" rx="1.6"/><rect x="13.5" y="13.5" width="6.5" height="6.5" rx="1.6"/></symbol>
+      <symbol id="i-user" viewBox="0 0 24 24"><circle cx="12" cy="8.5" r="3.5"/><path d="M5 20c.8-3.6 3.6-5.5 7-5.5s6.2 1.9 7 5.5"/></symbol>
+      <symbol id="i-calendar" viewBox="0 0 24 24"><rect x="4" y="5.5" width="16" height="14.5" rx="2"/><path d="M4 10h16M8.5 3.5v4M15.5 3.5v4"/></symbol>
+      <symbol id="i-trend" viewBox="0 0 24 24"><path d="M4 17l5-5.5 4 3.5 7-8"/><path d="M15 7h5v5"/></symbol>
+      <symbol id="i-calc" viewBox="0 0 24 24"><rect x="5" y="3.5" width="14" height="17" rx="2"/><path d="M8.5 8h7"/><circle cx="9" cy="12.5" r=".9" fill="currentColor" stroke="none"/><circle cx="12" cy="12.5" r=".9" fill="currentColor" stroke="none"/><circle cx="15" cy="12.5" r=".9" fill="currentColor" stroke="none"/><circle cx="9" cy="16" r=".9" fill="currentColor" stroke="none"/><circle cx="12" cy="16" r=".9" fill="currentColor" stroke="none"/><circle cx="15" cy="16" r=".9" fill="currentColor" stroke="none"/></symbol>
+      <symbol id="i-wallet" viewBox="0 0 24 24"><path d="M4 8V6.5A1.5 1.5 0 0 1 5.5 5H17"/><rect x="4" y="8" width="16" height="11.5" rx="2"/><circle cx="16" cy="13.75" r=".9" fill="currentColor" stroke="none"/></symbol>
+      <symbol id="i-back" viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></symbol>
+    </defs>
+  </svg>
+
+  <div class="app" id="app">
+
+    <main class="views" id="views">
+      <!-- عنوان اصلی فقط برای صفحه‌خوان‌ها؛ لوگو خودش نام را نشان می‌دهد -->
+      <h1 class="sr-only">دیوان</h1>
+
+      <!-- ============ تب ۱: خانه ============ -->
+      <section class="panel panel--home" id="panel-home" aria-label="خانه">
+        <div class="plaque">
+          <img class="plaque__logo" src="./assets/logo.png" alt="لوگوی دیوان" width="800" height="751" decoding="async">
+        </div>
+      </section>
+
+      <!-- ============ تب ۲: ابزارها ============ -->
+      <section class="panel" id="panel-tools" aria-labelledby="tools-title" hidden>
+
+        <!-- نمای فهرست ابزارها -->
+        <div id="tools-view">
+          <header class="head">
+            <h2 id="tools-title">ابزارها</h2>
+            <p class="head__sub">ماشین‌حساب فعال است؛ بقیه‌ی ابزارها به‌زودی می‌آیند.</p>
+          </header>
+
+          <div class="tools">
+            <button class="tool tool--live" type="button" id="open-calc">
+              <svg class="icon tool__icon" aria-hidden="true"><use href="#i-calc"/></svg>
+              <span class="tool__title">ماشین‌حساب مالی</span>
+              <span class="tool__sub">تورم، سود مرکب و تغییر درصدی</span>
+              <span class="tool__badge">فعال</span>
+            </button>
+
+            <button class="tool tool--soon" type="button" data-soon="تقویم اقتصادی" aria-disabled="true">
+              <svg class="icon tool__icon" aria-hidden="true"><use href="#i-calendar"/></svg>
+              <span class="tool__title">تقویم اقتصادی</span>
+              <span class="tool__sub">خبرهای مهم بازار و اثر معمولشان</span>
+              <span class="tool__badge">به‌زودی</span>
+            </button>
+
+            <button class="tool tool--soon" type="button" data-soon="روند طلا و دلار" aria-disabled="true">
+              <svg class="icon tool__icon" aria-hidden="true"><use href="#i-trend"/></svg>
+              <span class="tool__title">روند طلا و دلار</span>
+              <span class="tool__sub">وضعیت روند و اثر خبر</span>
+              <span class="tool__badge">به‌زودی</span>
+            </button>
+
+            <button class="tool tool--soon" type="button" data-soon="ثبت هزینه و درآمد" aria-disabled="true">
+              <svg class="icon tool__icon" aria-hidden="true"><use href="#i-wallet"/></svg>
+              <span class="tool__title">ثبت هزینه و درآمد</span>
+              <span class="tool__sub">ثبت روزانه و خلاصه‌ی ماه</span>
+              <span class="tool__badge">به‌زودی</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- نمای ماشین‌حساب (با دکمه‌ی ابزار باز می‌شود) -->
+        <div id="calc-view" hidden>
+          <header class="head head--row">
+            <button class="icon-btn" type="button" id="calc-back" aria-label="بازگشت به ابزارها">
+              <svg class="icon" aria-hidden="true"><use href="#i-back"/></svg>
+            </button>
+            <h2 id="calc-title">ماشین‌حساب مالی</h2>
+          </header>
+
+          <div class="seg" id="calc-modes" role="group" aria-label="نوع محاسبه">
+            <button type="button" data-mode="fv" aria-pressed="true">ارزش آینده</button>
+            <button type="button" data-mode="compound" aria-pressed="false">سود مرکب</button>
+            <button type="button" data-mode="change" aria-pressed="false">تغییر درصدی</button>
+          </div>
+          <p class="mode-desc" id="mode-desc"></p>
+
+          <!-- فیلدها با JavaScript بر اساس نوع محاسبه ساخته می‌شوند -->
+          <form class="tile form" id="calc-form" autocomplete="off" novalidate></form>
+
+          <div id="calc-result" aria-live="polite"></div>
+
+          <p class="fineprint">محاسبه‌ی ریاضی ساده است، نه توصیه‌ی مالی. واحد پول با خودته (تومان یا ریال) و نرخ‌ها را خودت وارد می‌کنی.</p>
+        </div>
+      </section>
+
+      <!-- ============ تب ۳: پنل من ============ -->
+      <section class="panel" id="panel-me" aria-labelledby="me-title" hidden>
+        <header class="head">
+          <h2 id="me-title">پنل من</h2>
+        </header>
+
+        <div class="tile profile">
+          <div class="avatar" aria-hidden="true">
+            <img id="avatar-img" alt="" hidden referrerpolicy="no-referrer">
+            <span id="avatar-initial">؟</span>
+          </div>
+          <div class="profile__text">
+            <p class="profile__name" id="profile-name">مهمان</p>
+            <p class="profile__sub" id="profile-sub" dir="auto"></p>
+          </div>
+        </div>
+
+        <div class="tile summary">
+          <h3>خلاصه‌ی مالی</h3>
+          <div class="empty">
+            <svg class="icon empty__icon" aria-hidden="true"><use href="#i-wallet"/></svg>
+            <p class="empty__title">هنوز چیزی ثبت نشده</p>
+            <p class="empty__text">وقتی ثبت هزینه و درآمد فعال شود، خلاصه‌ی ماه تو این‌جا نشان داده می‌شود.</p>
+            <button class="btn" type="button" data-goto="tools">دیدن ابزارها</button>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- نوار تب پایین. aria-current جای تب فعال را به صفحه‌خوان می‌گوید -->
+    <nav class="nav" aria-label="بخش‌های برنامه">
+      <button type="button" data-tab="home" aria-current="page">
+        <svg class="icon" aria-hidden="true"><use href="#i-home"/></svg>
+        <span>خانه</span>
+      </button>
+      <button type="button" data-tab="tools">
+        <svg class="icon" aria-hidden="true"><use href="#i-tools"/></svg>
+        <span>ابزارها</span>
+      </button>
+      <button type="button" data-tab="me">
+        <svg class="icon" aria-hidden="true"><use href="#i-user"/></svg>
+        <span>پنل من</span>
+      </button>
+    </nav>
+
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
+  </div>
+
+  <!-- ترتیب مهم است: اسکریپت تلگرام، بعد منطق محاسبه، بعد لایه‌ی تلگرام خودمان، آخر برنامه -->
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <script src="./calc.js"></script>
+  <script src="./telegram.js"></script>
+  <script src="./app.js"></script>
+</body>
+</html><!DOCTYPE html>
+<!--
   دیوان — مینی‌اپ تلگرام (طرح خام)
   فقط HTML و CSS و JS ساده است؛ برای GitHub Pages نیازی به build ندارد.
 -->
